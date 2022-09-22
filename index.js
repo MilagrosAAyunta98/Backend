@@ -1,26 +1,29 @@
-class Usuario{
-    constructor(nombre = "", apellido ="", libros = [], mascotas = []){
-        this.nombre = nombre
-        this.apellido = apellido
-        this.libros = libros
-        this. mascotas = mascotas
-    }
-    getFullName(){
-        return 'El nombre del usuario es: $(this.nombre) $(this.apellido)'
-    }
-    addMascota(mascota){
-        this.mascotas.push(mascota)
-    }
-    addBook(nombre, autor){
-        this.libros.push({nombre, autor})
-    }
-    getBookNames(){
-        return this.libros.map( libro => libro.nombre)
-    }
+// usando type module en package json
+import { Container } from "./containers/Container.js";
+
+
+const ProductContainer = new Container("productos");
+const CartContainer = new Container("carrito");
+
+
+const updateCart = async ({ idCarrito, idProduct }) => {
+try {
+    const cart = await CartContainer.getById(idCarrito);
+    if (!cart) return "Cart Not Found";
+
+    const product = await ProductContainer.getById(idProduct);
+
+    if (!product) return "Product not found";
+
+    cart.products.push(product);
+    
+    await CartContainer.update({
+    id: idCarrito,
+    newData: { products: cart.products },
+    });
+} catch (error) {
+    console.log(error);
 }
+};
 
-
-const newUser = new Usuario("Mili", "Ayunta")
-console.log(newUser.getFullName())
-newUser.addBook("Estudio en Rojo", "Arthur Conan Doyle")
-console.log(newUser.getBookNames())
+// updateCart({idCarrito: 1, idProduct: 3});
